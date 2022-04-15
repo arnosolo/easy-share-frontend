@@ -226,6 +226,7 @@ const useUploadList = (url_base: string, fileList: Array<FileInfo>) => {
           filename: it.file.name,
           lastModified: it.file.lastModified,
           type: it.file.type,
+          size: it.file.size,
           hasThumbnail: true,
           thumbnail: typeof(imgDataUrl)=="string" ? imgDataUrl : "",
           createdByUpload: true
@@ -239,6 +240,7 @@ const useUploadList = (url_base: string, fileList: Array<FileInfo>) => {
         filename: it.file.name,
         lastModified: it.file.lastModified,
         type: it.file.type,
+        size: it.file.size,
         createdByUpload: true
       }))
       removeUpload(it.id)

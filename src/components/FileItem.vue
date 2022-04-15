@@ -3,25 +3,31 @@
     <div class="file-item-title">
       <span @click="needNewName = true" v-show="!needNewName">{{fileInfo.filename}}</span>
       <input v-if="needNewName" type="text" v-model="newName">
-      <button v-if="needNewName" @click="rename" class="light-button" :class="{inactive: renameState == asyncState.waitRes}">
-        <span v-if="renameState == asyncState.waitRes">{{str.renaming}}</span>
-        <div v-else-if="renameState == asyncState.failed" class="file-item-msg">
-          <img src="../assets/failed.svg" alt="failed-img">
-          <span>{{`${str.rename}${str.failed}`}}</span>
-        </div>
-        <div v-else-if="renameState == asyncState.success" class="file-item-msg">
-          <img src="../assets/success.svg" alt="success-img">
-          <span>{{`${str.rename}${str.success}`}}</span>
-        </div>
-        <div v-else class="file-item-msg">
-          <img src="../assets/check.svg" alt="cancel-img">
-          <span>{{str.rename}}</span>
-        </div>
-      </button>
-      <button v-if="needNewName" @click="cancelRename" class="light-button file-item-msg">
-        <img src="../assets/cancel.svg" alt="cancel-img">
-        <span>{{str.cancel}}</span>
-      </button>
+      <div v-if="needNewName" class="name-input-editor">
+        <button @click="rename" class="light-button" :class="{inactive: renameState == asyncState.waitRes}">
+          <span v-if="renameState == asyncState.waitRes">{{str.renaming}}</span>
+          <div v-else-if="renameState == asyncState.failed" class="file-item-msg">
+            <img src="../assets/failed.svg" alt="failed-img">
+            <span>{{`${str.rename}${str.failed}`}}</span>
+          </div>
+          <div v-else-if="renameState == asyncState.success" class="file-item-msg">
+            <img src="../assets/success.svg" alt="success-img">
+            <span>{{`${str.rename}${str.success}`}}</span>
+          </div>
+          <div v-else class="file-item-msg">
+            <img src="../assets/check.svg" alt="cancel-img">
+            <span>{{str.rename}}</span>
+          </div>
+        </button>
+        <button @click="cancelRename" class="light-button file-item-msg">
+          <img src="../assets/cancel.svg" alt="cancel-img">
+          <span>{{str.cancel}}</span>
+        </button>
+        <button @click="cleanNameInput" class="light-button file-item-msg">
+          <img src="../assets/clear.svg" alt="clear-img">
+          <span>{{str.clear_input}}</span>
+        </button>
+      </div>
     </div>
     <div class="file-item-control">
       <button @click="deleteItem" class="light-button" :class="{inactive: deleteState == asyncState.waitRes}">
@@ -81,7 +87,7 @@
         </div>
         <div v-else class="file-item-msg">
           <img src="../assets/download.svg" alt="download-img">
-          <span>{{str.download}}</span>
+          <span>{{`${str.download} ${(fileInfo.size < 1048576 ? (fileInfo.size / 1024).toFixed(1).concat("KB") : (fileInfo.size / 1048576).toFixed(2).concat("MB"))}`}}</span>
         </div>
       </button>
     </div>
@@ -206,6 +212,9 @@ export default {
             document.body.appendChild(a)
             a.click();
             downloadState.value = asyncState.success
+            setTimeout(() => {
+              downloadState.value = asyncState.beforeStart
+            }, 5000)
             // a.remove()
             // window.URL.revokeObjectURL(blobUrl)
           } else {
@@ -278,45 +287,59 @@ export default {
     }
 
     const updateFileName = inject("updateFileName") as Function
-    let newName = ref(props.fileInfo.filename.split(".")[0])
+    const oldName = props.fileInfo.filename.split(".")[0]
+    let newName = ref(oldName)
     let needNewName = ref(false)
     let renameState = ref(asyncState.beforeStart)
     async function rename() {
-      renameState.value = asyncState.waitRes
-      const form = new FormData()
-      form.append("newName", `${newName.value}.${props.fileInfo.exten}`)
-      form.append("md5", props.fileInfo.md5)
-      const url = `${props.url_base}/api/v1/file/rename`
-      try {
-        const res = await fetch(url, {
-          method: 'post',
-          headers: {
-            'Authorization': ('Bearer ' + localStorage.getItem('token')) ?? ''
-          },
-          mode: 'cors',
-          body: form
-        })
-        const { success } = await res.json()
-        if (success) {
-          renameState.value = asyncState.success
-          updateFileName(props.fileInfo.md5, `${newName.value}.${props.fileInfo.exten}`)
-          needNewName.value = false
-          console.log("Rename success");
-        } else {
+      if(newName.value != oldName) {
+        renameState.value = asyncState.waitRes
+        const form = new FormData()
+        form.append("newName", `${newName.value}.${props.fileInfo.exten}`)
+        form.append("md5", props.fileInfo.md5)
+        const url = `${props.url_base}/api/v1/file/rename`
+        try {
+          const res = await fetch(url, {
+            method: 'post',
+            headers: {
+              'Authorization': ('Bearer ' + localStorage.getItem('token')) ?? ''
+            },
+            mode: 'cors',
+            body: form
+          })
+          const { success } = await res.json()
+          if (success) {
+            updateFileName(props.fileInfo.md5, `${newName.value}.${props.fileInfo.exten}`)
+            console.log("Rename success");
+            needNewName.value = false
+            renameState.value = asyncState.success
+            setTimeout(() => {
+              renameState.value = asyncState.beforeStart
+            }, 3000);
+          } else {
+            renameState.value = asyncState.failed
+            console.log("Rename failed");
+          }
+        } catch (error) {
           renameState.value = asyncState.failed
-          console.log("Rename failed");
+          console.error(error)
         }
-      } catch (error) {
-        renameState.value = asyncState.failed
-        console.error(error)
+      } else {
+        renameState.value = asyncState.success
+        needNewName.value = false
       }
-      
     }
+
     function cancelRename() {
       needNewName.value = false
     }
 
+    function cleanNameInput() {
+      newName.value = ""
+    }
+
     return {
+      cleanNameInput,
       thumbnailUrl,
       renameState,
       rename,
@@ -360,7 +383,12 @@ export default {
   /* 文字自动换行 */
   word-break: break-all;
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap:0.4em;
+}
+.file-item-title input {
+  height: 2rem;
 }
 .file-item-control {
   display: flex;
@@ -421,5 +449,9 @@ export default {
   pointer-events: none;
   background:#dddddd;
   opacity: 0.5;
+}
+.name-input-editor {
+  display: flex;
+  gap: 0.4rem;
 }
 </style>

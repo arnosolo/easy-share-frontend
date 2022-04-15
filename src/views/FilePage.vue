@@ -83,7 +83,7 @@ export default {
 @media (min-width: 40rem) {
   .file-page {
     /* border: 0.05em solid #888; */
-    max-width: 42rem;
+    max-width: 44rem;
     justify-content: center;
     overflow-y:inherit;
   }

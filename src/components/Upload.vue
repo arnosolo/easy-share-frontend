@@ -36,7 +36,10 @@
         <span>{{str.search_items}}</span>
       </div>
       <input type="text" v-model="keyword">
-      <button v-if="keyword?.length != 0" @click="clearInput" class="light-button">{{str.clear_input}}</button>
+      <button v-if="keyword?.length != 0" @click="clearInput" class="light-button file-item-msg">
+        <img src="../assets/clear.svg" alt="clear-img">
+        <span>{{str.clear_input}}</span>
+      </button>
     </div>
   </div>
 </template>
