@@ -2,6 +2,10 @@
   <!-- <div class="loading-plane"></div> -->
   <router-view @update_lang="setLang" :keyword="keyword" :checkAuth="checkAuth" :addUpload="addUpload" :uploadList="uploadList" :fileList="fileList" :setFileList="setFileList" :deleteFileItem="deleteFileItem" :str="str" :lang="lang" :url_base="url_base" :authed="authed"></router-view>
   <NavBar :str="str"></NavBar>
+  <!-- <div class="big-img">
+    <button>Close</button>
+    <img src="./assets/copy.svg" alt="">
+  </div> -->
 </template>
 
 <script lang="ts">
@@ -90,7 +94,7 @@ export default {
       window.addEventListener('resize', () => {
         // We execute the same script as before
         let vh = window.innerHeight * 0.01
-        console.log(vh);
+        // console.log(vh);
         document.documentElement.style.setProperty('--vh', `${vh}px`)
       })
     }
@@ -170,5 +174,18 @@ span {
   } 100% {
     transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg); 
   } 
+}
+
+.big-img {
+  background-color: rgb(100, 100, 100, 0.8);
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  left: 50%;
+  top: 50%;
+  transform:translate(-50%,-50%);
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
 }
 </style>

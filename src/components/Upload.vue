@@ -165,7 +165,8 @@ export default {
 }
 .control-item input {
   height: 2rem;
-  width: 8rem;
+  width: 6rem;
+  padding: 0rem 0.3rem 0rem 0.4rem;
   font-size: 1rem;
 }
 .light-button {

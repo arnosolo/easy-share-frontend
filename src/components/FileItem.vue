@@ -72,7 +72,7 @@
         <span>{{str.scan_to_download}}</span>
       </div>
       <div v-if="isImg">
-        <img v-show="imgLoaded" :src="thumbnailUrl" @load="handleImgLoaded" alt="preview_img">
+        <img v-show="imgLoaded" :src="thumbnailUrl" @click="toggleShowBigImg" @load="handleImgLoaded" alt="preview_img">
         <div v-if="!imgLoaded" class="loading-plane"></div>
       </div>
       <button @click="downloadFile" class="light-button" :class="{inactive: downloadState == asyncState.waitRes}">
@@ -88,6 +88,24 @@
         <div v-else class="file-item-msg">
           <img src="../assets/download.svg" alt="download-img">
           <span>{{`${str.download} ${(fileInfo.size < 1048576 ? (fileInfo.size / 1024).toFixed(1).concat("KB") : (fileInfo.size / 1048576).toFixed(2).concat("MB"))}`}}</span>
+        </div>
+      </button>
+    </div>
+
+    <div v-if="showBigImg" class="big-img">
+      <img v-if="!showOriginImg" :src="thumbnailUrl" @click="toggleShowBigImg" alt="thumbnail" class="big-img-preview">
+      <img v-else :src="fileUrl" @click="toggleShowBigImg" @load="handleOriginImgLoaded" alt="origin-img" class="big-img-preview">
+      <button v-if="thumbnailUrl!=fileUrl" @click="switchToOriginImg" class="light-button" :class="{inactive: !originImgLoaded && showOriginImg}">
+        <div v-if="originImgLoaded" class="file-item-msg">
+          <img src="../assets/success.svg" alt="success-img">
+          <span>{{str.download_success}}</span>
+        </div>
+        <div v-else-if="!originImgLoaded && showOriginImg">
+          <span>{{str.loading}}</span>
+        </div>
+        <div v-else class="file-item-msg">
+          <img src="../assets/download.svg" alt="download-img">
+          <span>{{str.show_origin}}</span>
         </div>
       </button>
     </div>
@@ -125,15 +143,15 @@ export default {
     let qrCreated = ref(false)
     let qrCodeUrl = ref("")
     const fileUrl = `${props.url_base}/api/v1/file/${props.fileInfo.md5WithExten}`
-    let thumbnailUrl = ""
+    let thumbnailUrl = ref("")
     if(props.fileInfo.hasThumbnail) {
       if(props.fileInfo.createdByUpload) {
-        thumbnailUrl = props.fileInfo.thumbnail
+        thumbnailUrl.value = props.fileInfo.thumbnail
       } else {
-        thumbnailUrl = `${props.url_base}/api/v1/file/${props.fileInfo.thumbnail}`
+        thumbnailUrl.value = `${props.url_base}/api/v1/file/${props.fileInfo.thumbnail}`
       }
     } else {
-      thumbnailUrl = fileUrl
+      thumbnailUrl.value = fileUrl
     }
     
     let isImg = ref(false)
@@ -338,7 +356,26 @@ export default {
       newName.value = ""
     }
 
+    let showBigImg = ref(false)
+    let showOriginImg = ref(false)
+    let originImgLoaded = ref(false)
+    function toggleShowBigImg() {
+      showBigImg.value = !showBigImg.value
+    }
+    function switchToOriginImg() {
+      showOriginImg.value = true
+    }
+    function handleOriginImgLoaded() {
+      originImgLoaded.value = true
+    }
+
     return {
+      handleOriginImgLoaded,
+      originImgLoaded,
+      showOriginImg,
+      switchToOriginImg,
+      toggleShowBigImg,
+      showBigImg,
       cleanNameInput,
       thumbnailUrl,
       renameState,
@@ -434,7 +471,7 @@ export default {
   height: 2.5rem;
   width: fit-content;
   min-width: 5rem;
-  /* margin: 0.2rem 0.4rem 0.2rem 0.4rem; */
+  padding: 0rem 0.2rem 0rem 0.2rem;
   border-radius: 0.3rem;
   background-color: rgba(238, 238, 238, 0.3);
   /* background-color: #fff; */
@@ -453,5 +490,26 @@ export default {
 .name-input-editor {
   display: flex;
   gap: 0.4rem;
+}
+.big-img {
+  background-color: rgb(100, 100, 100, 1);
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  left: 50%;
+  top: 50%;
+  transform:translate(-50%,-50%);
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+.big-img-preview {
+  max-width: 21rem;
+}
+.big-img button {
+  background: #ddd;
 }
 </style>

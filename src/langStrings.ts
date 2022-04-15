@@ -45,6 +45,7 @@ class LangString {
   file_upload_success = "File upload success"
   upload_progress = "Upload progress"
   download = "Download"
+  download_origin = "Download origin"
   downloading = "Downloading"
   download_failed = "Download failed"
   download_success = "Done"
@@ -60,6 +61,7 @@ class LangString {
   failed = " failed"
   success = " success"
   loaded_but_empty = "Filelist loaded, but it's empty"
+  show_origin = "Show origin"
 }
 const en = new LangString()
 const zhCN = new LangString()
@@ -124,6 +126,7 @@ zhCN.rename = "更名"
 zhCN.failed = "失败"
 zhCN.success = "成功"
 zhCN.loaded_but_empty = "文件列表加载, 但是里面没有内容."
+zhCN.show_origin = "显示原件"
 
 const langStrings = {en, zhCN}
 export { langStrings, LangString }
