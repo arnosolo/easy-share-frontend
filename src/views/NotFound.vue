@@ -42,7 +42,7 @@ export default {
 .notfound {
   background-color: #fff;
   flex:1;
-  max-width: 40rem;
+  max-width: 44rem;
   display: flex;
   flex-direction: column;
   justify-content: center;

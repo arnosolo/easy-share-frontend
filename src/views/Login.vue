@@ -98,7 +98,7 @@ export default {
 .login {
   /* background-color:rgba(238, 238, 238, 0.4); */
   flex:1;
-  max-width: 40rem;
+  max-width: 44rem;
   display: flex;
   flex-direction: column;
   align-items: center;

@@ -53,7 +53,7 @@ export default {
 
 <style scoped>
 .navbar {
-  background-color:whitesmoke;
+  background-color: var(--background-color-secondary);
   height: fit-content;
   display: flex;
 }
@@ -79,7 +79,6 @@ export default {
   }
 }
 .navbar-home-img {
-  /* border: 1px solid rgba(230, 165, 24, 0.813); */
   margin: 0em 1em 0em 1em;
   height: 2.2em;
   opacity: 0.5;

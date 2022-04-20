@@ -62,6 +62,9 @@ class LangString {
   success = " success"
   loaded_but_empty = "Filelist loaded, but it's empty"
   show_origin = "Show origin"
+  color_mode = "Color mode"
+  dark_mode = "Dark"
+  light_mode = "Light"
 }
 const en = new LangString()
 const zhCN = new LangString()
@@ -127,6 +130,9 @@ zhCN.failed = "失败"
 zhCN.success = "成功"
 zhCN.loaded_but_empty = "文件列表加载, 但是里面没有内容."
 zhCN.show_origin = "显示原件"
+zhCN.color_mode = "色彩模式"
+zhCN.dark_mode = "黑暗"
+zhCN.light_mode = "明亮"
 
-const langStrings = {en, zhCN}
+const langStrings = { en, zhCN }
 export { langStrings, LangString }

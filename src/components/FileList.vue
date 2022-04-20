@@ -58,12 +58,19 @@ export default {
     const updateUploadState = inject("updateUploadState") as Function
     new Array<FileInfo>()
     let keyword = inject<Ref<string>>("keyword") ?? ref("")
+    let keywordsRegStr = computed(() => {
+      if(keyword.value.length == 0){
+        return ""
+      } else {
+        let regStr = `(${keyword.value.replaceAll(' ', '|')})`
+        return regStr
+      }
+    })
 
     let filtedFileList = computed(() => {
       if(fileList != undefined) {
-        // return fileList.filter(it => it.filename.includes(keyword.value))
         let arr = fileList.filter(it => {
-          return (it.filename.match(new RegExp(keyword.value, "i")) == null) ? false : true
+          return (it.filename.match(new RegExp(keywordsRegStr.value, "i")) == null) ? false : true
         })
         arr.sort((a, b) => b.createTime - a.createTime)
         return arr
@@ -78,6 +85,7 @@ export default {
 
     const listFilesState = inject("listFilesState")
     return {
+      keywordsRegStr,
       fileListIsEmpty,
       filtedFileList,
       uploadList,

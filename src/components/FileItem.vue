@@ -87,7 +87,7 @@
         </div>
         <div v-else class="file-item-msg">
           <img src="../assets/download.svg" alt="download-img">
-          <span>{{`${str.download} ${(fileInfo.size < 1048576 ? (fileInfo.size / 1024).toFixed(1).concat("KB") : (fileInfo.size / 1048576).toFixed(2).concat("MB"))}`}}</span>
+          <span>{{`${str.download} ${(fileInfo.size < 1048576 ? (fileInfo.size / 1024).toFixed(0).concat(" KB") : (fileInfo.size / 1048576).toFixed(0).concat(" MB"))}`}}</span>
         </div>
       </button>
     </div>
@@ -456,7 +456,8 @@ export default {
   width: 9em;
 }
 .file-item-detail img {
-  max-width: 12em;
+  max-width: 12rem;
+  max-height: 22rem;
 }
 .file-item-msg {
   padding: 0rem 0.5rem 0rem 0.5rem;

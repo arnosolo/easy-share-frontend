@@ -25,12 +25,23 @@
           <option value=1.2>1.2</option>
         </select>
       </div>
+      <!-- <div class="setting-form-item">
+        <div class="setting-form-item-lable">
+          <img v-if="colorTheme == `dark`" src="../assets/moon.svg" alt="colorTheme-img">
+          <img v-else src="../assets/sun.svg" alt="colorTheme-img">
+          <div><span>{{str.color_mode}}</span></div>
+        </div>
+        <button @click="toggleColorTheme" class="light-button">
+          <span v-if="colorTheme == `dark`">{{str.dark_mode}}</span>
+          <span v-else>{{str.light_mode}}</span>
+        </button>
+      </div> -->
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { ref, reactive, onMounted, computed, inject, toRefs } from 'vue'
+import { ref, reactive, onMounted, computed, inject, toRefs, watch } from 'vue'
 import { langStrings, LangString } from '../langStrings';
 
 export default {
@@ -43,7 +54,16 @@ export default {
     },
     lang: {
       type: String,
+      required: true
     },
+    toggleColorTheme: {
+      type: Function,
+      required: true,
+    },
+    colorTheme: {
+      type: String,
+      required: true,
+    }
   },
   // @ts-ignore
   setup(props) {
@@ -54,6 +74,11 @@ export default {
     onMounted(() => {
       selectedLang.value = props.lang ?? ""
     })
+
+    // let colorTheme = ref("light")
+    // watch(colorTheme, (newVal, oldVal) => {
+    //   props.toggleColorTheme()
+    // })
 
     return {
       selectedLang, selectedFontSize, langOpts, langStrings
@@ -67,7 +92,7 @@ export default {
 .setting {
   /* background-color: antiquewhite; */
   flex: 1;
-  max-width: 40em;
+  max-width: 44rem;
   padding: 1rem 0rem 1rem 0rem;
 
   display: flex;
@@ -102,21 +127,4 @@ export default {
 .setting-form-item-lable img{
   width: 1.5rem;
 }
-.light-button {
-  height: 2.5em;
-  width: fit-content;
-  min-width: 5em;
-  margin: 0.2em 0.3em 0.2em 0.3em;
-  border-radius: 0.3em;
-  background-color: rgba(238, 238, 238, 0.5);
-  /* background-color: #fff; */
-  border: 0.08em solid #888;
-}
-
-.light-button:active {
-  transform: scale(0.98);
-  box-shadow: 0em 0.1em 0.3em rgba(0, 0, 0, 0.24);
-}
 </style>
-
-// @ts-check

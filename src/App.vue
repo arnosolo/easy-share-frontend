@@ -1,11 +1,6 @@
 <template>
-  <!-- <div class="loading-plane"></div> -->
-  <router-view @update_lang="setLang" :keyword="keyword" :checkAuth="checkAuth" :addUpload="addUpload" :uploadList="uploadList" :fileList="fileList" :setFileList="setFileList" :deleteFileItem="deleteFileItem" :str="str" :lang="lang" :url_base="url_base" :authed="authed"></router-view>
+  <router-view @update_lang="setLang" :colorTheme="colorTheme" :toggleColorTheme="toggleColorTheme" :keyword="keyword" :checkAuth="checkAuth" :addUpload="addUpload" :uploadList="uploadList" :fileList="fileList" :setFileList="setFileList" :deleteFileItem="deleteFileItem" :str="str" :lang="lang" :url_base="url_base" :authed="authed"></router-view>
   <NavBar :str="str"></NavBar>
-  <!-- <div class="big-img">
-    <button>Close</button>
-    <img src="./assets/copy.svg" alt="">
-  </div> -->
 </template>
 
 <script lang="ts">
@@ -23,6 +18,12 @@ export default {
   name: 'App',
   components: { Setting, NavBar, FilePage},
   setup() {
+    let colorTheme = ref("light")
+    function toggleColorTheme() {
+      colorTheme.value = colorTheme.value === "light" ? "dark" : "light"
+      document.documentElement.setAttribute('color-theme', colorTheme.value)
+    }
+
     const router = useRouter()
     let url_base = ref(configs.url_base)
     let keyword = ref("")
@@ -113,6 +114,8 @@ export default {
     })
 
     return {
+      colorTheme,
+      toggleColorTheme,
       keyword,
       fileList,
       setFileList,
@@ -127,10 +130,13 @@ export default {
 </script>
 
 <style>
+.test {
+  filter: invert(100%) hue-rotate(180deg);
+}
 input,
 select,
 span {
-  font: 1.0em "Arial";
+  font: 1rem "Arial";
 }
 #app {
   height: 100vh;
@@ -156,13 +162,36 @@ span {
 :root {
   --loading-size: 2em;
   --loading-color: rgb(233, 232, 232);
+
+  --background-color-primary: #fff;
+  --background-color-secondary: #eee;
+  --text-color-primary: #222;
+}
+[color-theme="dark"] {
+  --background-color-primary: #555;
+  --background-color-secondary: #777;
+  --text-color-primary: #ddd;
+}
+select,
+span {
+  color: var(--text-color-primary);
+}
+input,
+body {
+  background-color: var(--background-color-primary);
+  color: var(--text-color-primary);
+}
+input {
+  border-radius: 0.3rem;
+  border: 0.08rem solid #888;
 }
 
 .loading-plane {
   margin: 1em 0em 0.2em 0em;
   width: var(--loading-size);
   height: var(--loading-size);
-  background-color: var(--loading-color);
+  /* background-color: var(--loading-color); */
+  background-color: var(--background-color-secondary);
   animation: loading-plane 1.2s infinite ease-in-out; 
 }
 
@@ -176,16 +205,20 @@ span {
   } 
 }
 
-.big-img {
-  background-color: rgb(100, 100, 100, 0.8);
-  position: absolute;
-  width: 100vw;
-  height: 100vh;
-  left: 50%;
-  top: 50%;
-  transform:translate(-50%,-50%);
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
+.light-button {
+  height: 2.5rem;
+  width: fit-content;
+  min-width: 5rem;
+  margin: 0.2rem 0.3rem 0.2rem 0.3rem;
+  border-radius: 0.3rem;
+  /* background-color: rgba(238, 238, 238, 0.5); */
+  background-color: var(--background-color-secondary);
+  /* opacity: 0.5; */
+  border: 0.08rem solid #888;
+}
+
+.light-button:active {
+  transform: scale(0.98);
+  box-shadow: 0rem 0.1rem 0.3rem rgba(0, 0, 0, 0.24);
 }
 </style>
