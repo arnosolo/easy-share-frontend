@@ -14,6 +14,7 @@ class UploadInfo {
   uploadState: asyncState;
   uploadProgress: number;
   mergeState: asyncState;
+  controllers: Array<AbortController>;
   static cnt: number = 0;
   constructor(file: File) {
     this.file = file
@@ -26,6 +27,7 @@ class UploadInfo {
     this.uploadState = asyncState.beforeStart
     this.uploadProgress = 0
     this.mergeState = asyncState.beforeStart
+    this.controllers = new Array<AbortController>();
     UploadInfo.cnt++
   }
 }
@@ -126,9 +128,9 @@ const useUploadList = (url_base: string, fileList: Array<FileInfo>) => {
           form.append('filename', it.file.name);
           form.append('md5', it.md5);
           form.append('md5WithExten', md5WithExten);
-          // const controller = new AbortController(); // 用于手动终止fetch请求
-          // this.abortControllers.push(controller)
-          // const { signal } = controller; // 用于手动终止fetch请求
+          const controller = new AbortController(); // 用于手动终止fetch请求
+          it.controllers.push(controller)
+          const { signal } = controller; // 用于手动终止fetch请求
           const url = `${url_base}/api/v1/file/upload`
           const res = await fetch(url, {
             method: 'post',
@@ -137,7 +139,7 @@ const useUploadList = (url_base: string, fileList: Array<FileInfo>) => {
             },
             body: form,
             mode: 'cors',
-            // signal,
+            signal,
           })
           const resJson = await res.json()
           if (resJson.success) {
@@ -296,11 +298,17 @@ const useUploadList = (url_base: string, fileList: Array<FileInfo>) => {
     loadNext(0);
   })
  
-  function updateUploadState(id:string, s: asyncState) {
+  function updateUploadState(id:string, state: asyncState) {
     const index = uploadList.findIndex(it => it.id == id)
     if(index != -1) {
-      uploadList[index].uploadState = s
+      const it = uploadList[index]
+      it.uploadState = state
+      abortReq(it)
     }
+  }
+
+  function abortReq(it: UploadInfo) {
+    it.controllers.forEach(c => c.abort())
   }
 
   return {

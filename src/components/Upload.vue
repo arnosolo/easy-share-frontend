@@ -200,6 +200,6 @@ export default {
   gap: 0.3rem;
 }
 .file-item-msg img{
-  max-width: 1rem;
+  max-width: var(--font-size);
 }
 </style>

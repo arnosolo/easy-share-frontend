@@ -21,7 +21,10 @@
         <div v-else-if="uploadInfo.uploadState == asyncState.failed" class="file-item-msg">
           <img src="../assets/failed.svg" alt="failed-img">
           <span>{{str.uploadFailed}}</span>
-          <button @click="uploadItem" class="light-button"><span>{{str.uploadAgain}}</span></button>
+          <button @click="uploadItem" class="light-button file-item-msg">
+            <img src="../assets/upload.svg" alt="failed-img">
+            <span>{{str.uploadAgain}}</span>
+          </button>
         </div>
         <div v-else-if="uploadInfo.uploadState == asyncState.waitRes" class="file-item-msg">
           <div class="loading-plane"></div>
@@ -75,6 +78,7 @@ export default {
 
     function deleteItem() {
       if(confirm(`${props.str.cancel_upload}`)) {
+        cancelUpload()
         removeUpload(props.uploadInfo.id)
       }
     }
@@ -124,7 +128,7 @@ export default {
   gap: 0.5rem;
 }
 .file-item-msg img{
-  max-width: 1rem;
+  max-width: var(--font-size);
 }
 .file-item-detail {
   /* background-color:antiquewhite; */

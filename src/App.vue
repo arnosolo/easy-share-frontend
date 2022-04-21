@@ -133,11 +133,7 @@ export default {
 .test {
   filter: invert(100%) hue-rotate(180deg);
 }
-input,
-select,
-span {
-  font: 1rem "Arial";
-}
+
 #app {
   height: 100vh;
   height: calc(var(--vh, 1vh) * 100);
@@ -160,8 +156,10 @@ span {
 }
 
 :root {
-  --loading-size: 2em;
+  --loading-size: 2rem;
   --loading-color: rgb(233, 232, 232);
+
+  --font-size: 1rem;
 
   --background-color-primary: #fff;
   --background-color-secondary: #eee;
@@ -171,6 +169,11 @@ span {
   --background-color-primary: #555;
   --background-color-secondary: #777;
   --text-color-primary: #ddd;
+}
+input,
+select,
+span {
+  font: var(--font-size) "Arial";
 }
 select,
 span {
@@ -211,8 +214,8 @@ input {
   min-width: 5rem;
   margin: 0.2rem 0.3rem 0.2rem 0.3rem;
   border-radius: 0.3rem;
-  /* background-color: rgba(238, 238, 238, 0.5); */
-  background-color: var(--background-color-secondary);
+  background-color: rgba(238, 238, 238, 0.5);
+  /* background-color: var(--background-color-secondary); */
   /* opacity: 0.5; */
   border: 0.08rem solid #888;
 }

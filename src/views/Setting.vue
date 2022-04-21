@@ -20,9 +20,12 @@
           <img src="../assets/font.svg" alt="font_size-img">
           <div><span>{{str.font_size}}</span></div>
         </div>
-        <select v-model="selectedFontSize" class="light-button">
-          <option value=1>1.0</option>
-          <option value=1.2>1.2</option>
+        <select v-model="selectedFontSize" @change="setFontSize" class="light-button">
+          <option
+            v-for="val in fontSizes"
+            :value=val
+            :key="val"
+          >{{val}}</option>
         </select>
       </div>
       <!-- <div class="setting-form-item">
@@ -69,11 +72,26 @@ export default {
   setup(props) {
     let selectedLang = ref("")
     let selectedFontSize = ref(1.0)
+    const fontSizes = [0.9, 1.0, 1.1, 1.2]
     const langOpts = Object.keys(langStrings)
 
     onMounted(() => {
       selectedLang.value = props.lang ?? ""
+
+      const fontSetting = Number(localStorage.getItem('font_size'))
+      selectedFontSize.value = new Set(fontSizes).has(fontSetting) ? fontSetting : 1.0
+      console.log(localStorage.getItem('font_size'));
+      
     })
+
+    watch(selectedFontSize, (newVal, oldVal) => {
+      setFontSize(newVal)
+    })
+
+    function setFontSize(size: number) {
+      localStorage.setItem("font_size", `${size}`)
+      document.documentElement.style.setProperty("--font-size", `${size}rem`);
+    }
 
     // let colorTheme = ref("light")
     // watch(colorTheme, (newVal, oldVal) => {
@@ -81,7 +99,7 @@ export default {
     // })
 
     return {
-      selectedLang, selectedFontSize, langOpts, langStrings
+      selectedLang, selectedFontSize, setFontSize, langOpts, langStrings, fontSizes
     }
   },
 }

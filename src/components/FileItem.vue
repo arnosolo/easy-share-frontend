@@ -466,7 +466,7 @@ export default {
   gap: 0.5rem;
 }
 .file-item-msg img{
-  max-width: 1rem;
+  max-width: var(--font-size);
 }
 .light-button {
   height: 2.5rem;
