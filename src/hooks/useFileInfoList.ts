@@ -14,6 +14,8 @@ export class FileInfo {
   hasThumbnail: boolean
   thumbnail: string
   createdByUpload: boolean
+  selected: boolean
+  deleteState: asyncState
   constructor({md5="", filename="", md5WithExten="", lastModified=0, createTime=Date.now(), type="", size=0, hasThumbnail=false, thumbnail="", createdByUpload=false}) {
     this.md5 = md5
     this.filename = filename
@@ -26,6 +28,36 @@ export class FileInfo {
     this.hasThumbnail = hasThumbnail
     this.thumbnail = thumbnail
     this.createdByUpload = createdByUpload
+    this.selected = false
+    this.deleteState = asyncState.beforeStart
+  }
+
+  async deleteItem(url_base: string, deleteFileItem: (md5:string) => void) {
+    this.deleteState = asyncState.waitRes
+    const form = new FormData()
+    const url = `${url_base}/api/v1/file/${this.md5WithExten}`
+    try {
+      const res = await fetch(url, {
+        method: 'delete',
+        headers: {
+          'Authorization': ('Bearer ' + localStorage.getItem('token')) ?? ''
+        },
+        mode: 'cors',
+        body: form
+      })
+      const { success, msg } = await res.json()
+      if (success) {
+        this.deleteState = asyncState.success
+        console.log(`Server: ${msg}`);
+        deleteFileItem(this.md5)
+      } else {
+        this.deleteState = asyncState.failed
+        console.error(`Server: ${msg}`);
+      }
+    } catch (error) {
+      this.deleteState = asyncState.failed
+      console.error(error)
+    }
   }
 }
 
@@ -46,12 +78,24 @@ const useFileInfoList = (url_base: string) => {
     })
     console.log("Got fileList:", ls);
     console.log("Got Ref<fileList>:", fileList);
-
   }
 
   function deleteFileItem(md5: string) {
     const i = fileList.findIndex(file => file.md5 === md5)
     fileList.splice(i, 1)
+  }
+
+  function clearSelected() {
+    fileList.forEach(it => it.selected = false)
+  }
+
+  function deleteSelected() {
+    fileList.forEach(it => {
+      if(it.selected) {
+        console.log("deleteSelected");
+        it.deleteItem(url_base, deleteFileItem)
+      }
+    })
   }
 
   function updateFileName(md5: string, newName: string): boolean {
@@ -104,6 +148,8 @@ const useFileInfoList = (url_base: string) => {
   }
 
   return {
+    clearSelected,
+    deleteSelected,
     fileList,
     setFileList,
     deleteFileItem,

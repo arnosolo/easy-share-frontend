@@ -1,32 +1,35 @@
 <template>
   <div class="file-item">
-    <div class="file-item-title"><span>{{uploadInfo.file.name}}</span></div>
+    <div class="title">
+      <img :src="fileTypeIconSrc" alt="file-type-icon" class="file-type-icon">
+      <span>{{uploadInfo.file.name}}</span>
+    </div>
     <div class="file-item-control">
       <div><span>{{(uploadInfo.file.size < 1048576 ? (uploadInfo.file.size / 1024).toFixed(1).concat("KB") : (uploadInfo.file.size / 1048576).toFixed(2).concat("MB"))}}</span></div>
-      <button @click="cancelUpload" class="light-button file-item-msg">
+      <button @click="cancelUpload" class="light-button light-button-content">
         <img src="../assets/cancel.svg" alt="cancel-img">
-        <span>{{str.cancel_upload}}</span>
+        <span>{{str.cancel}}</span>
       </button>
-      <button @click="deleteItem" class="light-button file-item-msg">
+      <button @click="deleteItem" class="light-button light-button-content">
         <img src="../assets/delete.svg" alt="delete-img">
         <span>{{str.delete}}</span>
       </button>
     </div>
     <div class="file-item-control">
       <div>
-        <div v-if="uploadInfo.uploadState == asyncState.success" class="file-item-msg">
+        <div v-if="uploadInfo.uploadState == asyncState.success" class="light-button-content">
           <img src="../assets/success.svg" alt="success-img">
           <span>{{str.uploadSuccess}}</span>
         </div>
-        <div v-else-if="uploadInfo.uploadState == asyncState.failed" class="file-item-msg">
+        <div v-else-if="uploadInfo.uploadState == asyncState.failed" class="light-button-content">
           <img src="../assets/failed.svg" alt="failed-img">
           <span>{{str.uploadFailed}}</span>
-          <button @click="uploadItem" class="light-button file-item-msg">
+          <button @click="uploadItem" class="light-button light-button-content">
             <img src="../assets/upload.svg" alt="failed-img">
             <span>{{str.uploadAgain}}</span>
           </button>
         </div>
-        <div v-else-if="uploadInfo.uploadState == asyncState.waitRes" class="file-item-msg">
+        <div v-else-if="uploadInfo.uploadState == asyncState.waitRes" class="status-msg">
           <div class="loading-plane"></div>
           <span v-if="uploadInfo.hashState == asyncState.failed">{{str.slice_failed}}</span>
           <span v-else-if="uploadInfo.hashState == asyncState.waitRes" >{{str.slice_progress}}: {{uploadInfo.hashProgress.toFixed(0)}}%</span>
@@ -46,6 +49,7 @@ import { LangString } from '../langStrings';
 import { asyncState } from '../types'
 import SparkMD5 from 'spark-md5'
 import { UploadInfo } from '../hooks/useUploadList';
+import { useFileType } from '../hooks/useFileType';
 
 export default {
   name: "UploadItem",
@@ -87,7 +91,11 @@ export default {
       uploadById(props.uploadInfo.id)
     }
 
+    const { fileType, fileTypeIconSrc } = useFileType(props.uploadInfo.file.name)
+
     return {
+      fileType,
+      fileTypeIconSrc,
       cancelUpload,
       asyncState,
       deleteItem,
@@ -105,6 +113,7 @@ export default {
   padding: 0.5em 1em 0.8em 1em;
   margin: 0.6em 0.6em 0.6em 0.6em;
   box-shadow:0em 0.05em 0.2em #999;
+  border-radius: 0.4em;
   /* 文字超出部分采用... */
   word-wrap: break-word;
 
@@ -112,9 +121,16 @@ export default {
   flex-direction: column;
   gap: 0.6rem;
 }
-.file-item-title {
-  /* border: 0.05em solid #888; */
-  /* font: 1.0em "Arial"; */
+.file-item .title {
+  /* 文字自动换行 */
+  word-break: break-all;
+  display: flex;
+  /* flex-wrap: wrap; */
+  align-items: center;
+  gap:0.4em;
+}
+.file-item .title .file-type-icon{
+  max-width: calc(var(--font-size));
 }
 .file-item-control {
   display: flex;
@@ -152,43 +168,9 @@ export default {
 .file-item-detail img {
   max-width: 12em;
 }
-.light-button {
-  height: 2.5rem;
-  width: fit-content;
-  min-width: 5rem;
-  /* margin: 0.2rem 0.4rem 0.2rem 0.4rem; */
-  padding: 0 0.3rem 0 0.3rem;
-  border-radius: 0.3rem;
-  background-color: rgba(238, 238, 238, 0.3);
-  /* background-color: #fff; */
-  border: 0.08rem solid #888;
-  font-size: 0.9rem;
-}
-.light-button:active {
-  transform: scale(0.98);
-  box-shadow: 0rem 0.1rem 0.3rem rgba(0, 0, 0, 0.24);
-}
-
-:root {
-  --loading-size: 1rem;
-  --loading-color: rgb(233, 232, 232);
-}
-
-.loading-plane {
-  margin: 0;
-  width: var(--loading-size);
-  height: var(--loading-size);
-  background-color: var(--loading-color);
-  animation: loading-plane 1.2s infinite ease-in-out; 
-}
-
-@keyframes loading-plane {
-  0% {
-    transform: perspective(120px) rotateX(0deg) rotateY(0deg); 
-  } 50% {
-    transform: perspective(120px) rotateX(-180.1deg) rotateY(0deg); 
-  } 100% {
-    transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg); 
-  } 
+.status-msg {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
 }
 </style>

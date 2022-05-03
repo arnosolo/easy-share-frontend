@@ -1,13 +1,14 @@
 <template>
   <div class="setting">
-    <h1>{{str.setting}}</h1>
+    <h1 class="setting-title">{{str.setting}}</h1>
     <div class="setting-form">
       <div class="setting-form-item">
         <div class="setting-form-item-lable">
           <img src="../assets/language.svg" alt="language-img">
           <div><span>{{str.lang}}</span></div>
         </div>
-        <select v-model="selectedLang" v-on:change="$emit('update_lang', selectedLang)" class="light-button">
+        <!-- <select v-model="selectedLang" v-on:change="$emit('update_lang', selectedLang)" class="light-button"> -->
+        <select v-model="lang" class="light-button">
           <option
             v-for="opt in langOpts"
             :value="opt"
@@ -20,7 +21,7 @@
           <img src="../assets/font.svg" alt="font_size-img">
           <div><span>{{str.font_size}}</span></div>
         </div>
-        <select v-model="selectedFontSize" @change="setFontSize" class="light-button">
+        <select v-model="selectedFontSize" class="light-button">
           <option
             v-for="val in fontSizes"
             :value=val
@@ -51,13 +52,17 @@ export default {
   name: "Setting",
   emits: ['update_lang'],
   props: {
+    // lang: {
+    //   type: String,
+    //   required: true
+    // },
+    // langOpts: {
+    //   type: Array,
+    //   required: true,
+    // },
     str: {
       type: LangString,
-      required: true
-    },
-    lang: {
-      type: String,
-      required: true
+      required: true,
     },
     toggleColorTheme: {
       type: Function,
@@ -66,40 +71,25 @@ export default {
     colorTheme: {
       type: String,
       required: true,
-    }
+    },
+    // fontSizes: {
+    //   type: Array,
+    //   required: true,
+    // },
   },
   // @ts-ignore
   setup(props) {
-    let selectedLang = ref("")
-    let selectedFontSize = ref(1.0)
-    const fontSizes = [0.9, 1.0, 1.1, 1.2]
-    const langOpts = Object.keys(langStrings)
-
-    onMounted(() => {
-      selectedLang.value = props.lang ?? ""
-
-      const fontSetting = Number(localStorage.getItem('font_size'))
-      selectedFontSize.value = new Set(fontSizes).has(fontSetting) ? fontSetting : 1.0
-      console.log(localStorage.getItem('font_size'));
-      
-    })
-
-    watch(selectedFontSize, (newVal, oldVal) => {
-      setFontSize(newVal)
-    })
-
-    function setFontSize(size: number) {
-      localStorage.setItem("font_size", `${size}`)
-      document.documentElement.style.setProperty("--font-size", `${size}rem`);
-    }
-
-    // let colorTheme = ref("light")
-    // watch(colorTheme, (newVal, oldVal) => {
-    //   props.toggleColorTheme()
-    // })
+    const fontSizes = inject("fontSizes") as Array<string>
+    const selectedFontSize = inject("selectedFontSize")
+    const lang = inject("lang")
+    const langOpts = inject("langOpts") as Array<string>
 
     return {
-      selectedLang, selectedFontSize, setFontSize, langOpts, langStrings, fontSizes
+      lang,
+      langOpts,
+      langStrings,
+      fontSizes,
+      selectedFontSize,
     }
   },
 }
@@ -116,7 +106,11 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: 1rem;
+}
+.setting-title {
+  font: 2rem;
+  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 .setting-form {
   display: flex;
@@ -133,7 +127,7 @@ export default {
   gap: 0.8rem;
 }
 .setting-form-item select {
-  padding: 0em 0.5em 0em 1em;
+  /* padding: 0em 0.5em 0em 1em; */
   outline: none;
   -webkit-appearance: button;
 }

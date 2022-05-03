@@ -8,7 +8,7 @@ class LangString {
   signUp = "Sign up"
   login = "Login"
   login_or_signup = "Login / Sign up"
-  selectFile = "Upload files"
+  selectFile = "Upload"
   chooseFile = "Choose"
   loading = "Loading..."
   listFilesAgain = "List all again"
@@ -65,6 +65,11 @@ class LangString {
   color_mode = "Color mode"
   dark_mode = "Dark"
   light_mode = "Light"
+  save = "Save"
+  select = "Select"
+  edit = "edit"
+  items = "items"
+  hide = "Hide"
 }
 const en = new LangString()
 const zhCN = new LangString()
@@ -75,7 +80,7 @@ zhCN.username = "用户名"
 zhCN.password = "密码"
 zhCN.signUp = "注册"
 zhCN.login = "登录"
-zhCN.selectFile = "上传文件"
+zhCN.selectFile = "上传"
 zhCN.chooseFile = "浏览文件"
 zhCN.loading = "正在加载..."
 zhCN.listFilesAgain = "再次列出文件"
@@ -133,6 +138,11 @@ zhCN.show_origin = "显示原件"
 zhCN.color_mode = "色彩模式"
 zhCN.dark_mode = "黑暗"
 zhCN.light_mode = "明亮"
+zhCN.save = "保存"
+zhCN.select = "选取"
+zhCN.edit = "编辑"
+zhCN.items = "项目"
+zhCN.hide = "隐藏"
 
 const langStrings = { en, zhCN }
 export { langStrings, LangString }

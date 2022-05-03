@@ -1,7 +1,13 @@
 <template>
   <div class="file-page">
-    <Upload :str="str" :url_base="url_base" :uploadList="uploadList"></Upload>
-    <FileList :deleteFileItem="deleteFileItem" :str="str" :fileList="fileList" :uploadList="uploadList" :url_base="url_base"></FileList>
+    <!-- <Upload :str="str" :url_base="url_base" :uploadList="uploadList"></Upload>
+    <UploadItem
+      v-for="(item) in uploadList"
+      :key="item.id"
+      :uploadInfo="item"
+      :str="str"
+      :url_base="url_base"
+    ></UploadItem> -->
   </div>
 </template>
 
@@ -55,7 +61,7 @@ export default {
 
 <style scoped>
 @media (max-width: 35rem) {
-.file-page {
+  .file-page {
     flex: 1;
     overflow-y: auto;
     display: flex;
@@ -67,11 +73,12 @@ export default {
 /* large */
 @media (min-width: 35rem) {
   .file-page {
-    flex: 1;
-    width: 0;
-    max-width: 44em;
-
+    /* overflow-y: auto; */
+    max-width: 44rem;
     display: flex;
+    flex-direction: row;
+    align-items:flex-start;
+    justify-content: center;
   }
 }
 </style>

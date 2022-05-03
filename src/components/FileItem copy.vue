@@ -1,109 +1,96 @@
 <template>
   <div class="file-item">
-    <div class="title-container">
-      <input type="checkbox" v-show="selectorActived" v-model="fileInfo.selected">
-      <div v-if="!showDetail">
-        <span v-if="fileInfo.deleteState == asyncState.waitRes">{{str.deleting}}</span>
-        <div v-else-if="fileInfo.deleteState == asyncState.failed" class="light-button-content">
-          <img src="../assets/failed.svg" alt="failed-img">
-          <span>{{str.failed}}</span>
-        </div>
-      </div>
-      <div :class="{title:!showDetail, expanded_titile:showDetail}" @click="ToggleShowDetail">
-        <img :src="fileTypeIconSrc" alt="file-type-icon" class="file-type-icon">
-        <!-- <span @click="needNewName = true" v-show="!needNewName">{{fileInfo.filename}}</span> -->
-        <span v-show="!needNewName" :class="{bold_text: showDetail}">{{fileInfo.filename}}</span>
-        <input v-if="needNewName" type="text" v-model="newName">
-        <div v-if="needNewName" class="name-input-editor">
-          <button @click="rename" class="light-button" :class="{inactive: renameState == asyncState.waitRes}">
-            <span v-if="renameState == asyncState.waitRes">{{str.renaming}}</span>
-            <div v-else-if="renameState == asyncState.failed" class="light-button-content">
-              <img src="../assets/failed.svg" alt="failed-img">
-              <span>{{`${str.rename}${str.failed}`}}</span>
-            </div>
-            <div v-else-if="renameState == asyncState.success" class="light-button-content">
-              <img src="../assets/success.svg" alt="success-img">
-              <span>{{`${str.rename}${str.success}`}}</span>
-            </div>
-            <div v-else class="light-button-content">
-              <img src="../assets/check.svg" alt="cancel-img">
-              <span>{{str.update}}</span>
-            </div>
-          </button>
-          <button @click="cancelRename" class="light-button light-button-content">
-            <img src="../assets/cancel.svg" alt="cancel-img">
-            <span>{{str.cancel}}</span>
-          </button>
-          <button @click="cleanNameInput" class="light-button light-button-content">
-            <img src="../assets/clear.svg" alt="clear-img">
-            <span>{{str.clear_input}}</span>
-          </button>
-        </div>
-      </div>
-    </div>
-    
-
-    <div class="detail" v-if="showDetail">
-      <!-- <span>{{`${(fileInfo.size < 1048576 ? (fileInfo.size / 1024).toFixed(0).concat(" KB") : (fileInfo.size / 1048576).toFixed(0).concat(" MB"))}`}}</span> -->
-      <div class="detail-part">
-        <button @click="needNewName = true" class="light-button">
-          <div class="light-button-content">
-            <img src="../assets/edit.svg" alt="failed-img">
+    <div class="title">
+      <img :src="fileTypeIconSrc" alt="file-type-icon" class="file-type-icon">
+      <span @click="needNewName = true" v-show="!needNewName">{{fileInfo.filename}}</span>
+      <input v-if="needNewName" type="text" v-model="newName">
+      <div v-if="needNewName" class="name-input-editor">
+        <button @click="rename" class="light-button" :class="{inactive: renameState == asyncState.waitRes}">
+          <span v-if="renameState == asyncState.waitRes">{{str.renaming}}</span>
+          <div v-else-if="renameState == asyncState.failed" class="light-button-content">
+            <img src="../assets/failed.svg" alt="failed-img">
+            <span>{{`${str.rename}${str.failed}`}}</span>
+          </div>
+          <div v-else-if="renameState == asyncState.success" class="light-button-content">
+            <img src="../assets/success.svg" alt="success-img">
+            <span>{{`${str.rename}${str.success}`}}</span>
+          </div>
+          <div v-else class="light-button-content">
+            <img src="../assets/check.svg" alt="cancel-img">
             <span>{{str.rename}}</span>
           </div>
         </button>
-        <button @click="deleteCurItem" class="light-button" :class="{inactive: fileInfo.deleteState == asyncState.waitRes}">
-          <span v-if="fileInfo.deleteState == asyncState.waitRes">{{str.deleting}}</span>
-          <div v-else-if="fileInfo.deleteState == asyncState.failed" class="light-button-content">
-            <img src="../assets/failed.svg" alt="failed-img">
-            <span>{{str.deleteAgain}}</span>
-          </div>
-          <div class="light-button-content" v-else>
-            <img src="../assets/delete.svg" alt="delete-img">
-            <span>{{str.delete}}</span>
-          </div>
+        <button @click="cancelRename" class="light-button light-button-content">
+          <img src="../assets/cancel.svg" alt="cancel-img">
+          <span>{{str.cancel}}</span>
         </button>
-        <button @click="copyLink" class="light-button">
-          <div class="light-button-content" v-if="linkCopyState == asyncState.success">
-            <img src="../assets/success.svg" alt="success-img">
-            <span>{{str.copied}}</span>
-          </div>
-          <div class="light-button-content" v-else-if="linkCopyState == asyncState.failed">
-            <img src="../assets/failed.svg" alt="failed-img">
-            <span>{{str.copyFailed}}</span>
-          </div>
-          <div class="light-button-content" v-else>
-            <img src="../assets/copy.svg" alt="copy-img">
-            <span>{{str.copyLink}}</span>
-          </div>
-        </button>
-        <button @click="downloadFile" class="light-button" :class="{inactive: downloadState == asyncState.waitRes}">
-          <span v-if="downloadState == asyncState.waitRes">{{str.downloading}} {{downloadProgress.toFixed(0)}}%</span>
-          <div v-else-if="downloadState == asyncState.failed" class="light-button-content">
-            <img src="../assets/failed.svg" alt="failed-img">
-            <span>{{str.download_failed}}</span>
-          </div>
-          <div v-else-if="downloadState == asyncState.success" class="light-button-content">
-            <img src="../assets/success.svg" alt="failed-img">
-            <span>{{str.download_success}}</span>
-          </div>
-          <div v-else class="light-button-content">
-            <img src="../assets/download.svg" alt="download-img">
-            <span>{{`${str.save} ${(fileInfo.size < 1048576 ? (fileInfo.size / 1024).toFixed(0).concat(" KB") : (fileInfo.size / 1048576).toFixed(0).concat(" MB"))}`}}</span>
-          </div>
+        <button @click="cleanNameInput" class="light-button light-button-content">
+          <img src="../assets/clear.svg" alt="clear-img">
+          <span>{{str.clear_input}}</span>
         </button>
       </div>
-      <div class="detail-part">
-        <div v-if="fileType == 'image'">
-          <img v-show="imgLoaded" class="file-item-detail-img" :src="thumbnailUrl" @click="toggleShowBigImg" @load="handleImgLoaded" alt="preview_img">
-          <div v-if="!imgLoaded" class="loading-plane"></div>
+    </div>
+    <div class="control">
+      <button @click="deleteItem" class="light-button" :class="{inactive: deleteState == asyncState.waitRes}">
+        <span v-if="deleteState == asyncState.waitRes">{{str.deleting}}</span>
+        <div v-else-if="deleteState == asyncState.failed" class="light-button-content">
+          <img src="../assets/failed.svg" alt="failed-img">
+          <span>{{str.deleteAgain}}</span>
         </div>
-        <div class="qrcode">
-          <img :src="qrCodeUrl" alt="preview_img">
-          <span>{{str.scan_to_download}}</span>
+        <div class="light-button-content" v-else>
+          <img src="../assets/delete.svg" alt="delete-img">
+          <span>{{str.delete}}</span>
         </div>
+      </button>
+      <button @click="copyLink" class="light-button">
+        <div class="light-button-content" v-if="linkCopyState == asyncState.success">
+          <img src="../assets/success.svg" alt="success-img">
+          <span>{{str.copied}}</span>
+        </div>
+        <div class="light-button-content" v-else-if="linkCopyState == asyncState.failed">
+          <img src="../assets/failed.svg" alt="failed-img">
+          <span>{{str.copyFailed}}</span>
+        </div>
+        <div class="light-button-content" v-else>
+          <img src="../assets/copy.svg" alt="copy-img">
+          <span>{{str.copyLink}}</span>
+        </div>
+      </button>
+      <button @click="ToggleShowDetail" class="light-button">
+        <div v-if="!showDetail" class="light-button-content">
+          <span>{{str.more}}</span>
+          <img src="../assets/fold_arrow_down.svg" alt="fold_arrow_down-img">
+        </div>
+        <div v-else class="light-button-content">
+          <span>{{str.less}}</span>
+          <img src="../assets/fold_arrow_up.svg" alt="fold_arrow_up-img">
+        </div>
+      </button>
+    </div>
+    <div class="detail" v-if="showDetail">
+      <div class="qrcode">
+        <img :src="qrCodeUrl" alt="preview_img">
+        <span>{{str.scan_to_download}}</span>
       </div>
-      
+      <div v-if="fileType == 'image'">
+        <img v-show="imgLoaded" class="file-item-detail-img" :src="thumbnailUrl" @click="toggleShowBigImg" @load="handleImgLoaded" alt="preview_img">
+        <div v-if="!imgLoaded" class="loading-plane"></div>
+      </div>
+      <button @click="downloadFile" class="light-button" :class="{inactive: downloadState == asyncState.waitRes}">
+        <span v-if="downloadState == asyncState.waitRes">{{str.downloading}} {{downloadProgress.toFixed(0)}}%</span>
+        <div v-else-if="downloadState == asyncState.failed" class="light-button-content">
+          <img src="../assets/failed.svg" alt="failed-img">
+          <span>{{str.download_failed}}</span>
+        </div>
+        <div v-else-if="downloadState == asyncState.success" class="light-button-content">
+          <img src="../assets/success.svg" alt="failed-img">
+          <span>{{str.download_success}}</span>
+        </div>
+        <div v-else class="light-button-content">
+          <img src="../assets/download.svg" alt="download-img">
+          <span>{{`${str.download} ${(fileInfo.size < 1048576 ? (fileInfo.size / 1024).toFixed(0).concat(" KB") : (fileInfo.size / 1048576).toFixed(0).concat(" MB"))}`}}</span>
+        </div>
+      </button>
     </div>
 
     <div v-if="showBigImg" class="big-img">
@@ -170,14 +157,39 @@ export default {
     }
     
     const { fileType, fileTypeIconSrc } = useFileType(props.fileInfo.filename)
+    // const extendToType = {
+    //   "svg": "image",
+    //   "jpg": "image",
+    //   "jpeg": "image",
+    //   "gif": "image",
+    //   "png": "image",
+    //   "bmp": "image",
+    //   "mov": "video",
+    //   "avi": "video",
+    //   "webm": "video",
+    //   "mp4": "video",
+    //   "mp3": "audio",
+    //   "m4a": "audio",
+    //   "wav": "audio",
+    //   "md": "text",
+    //   "txt": "text",
+    //   "doc": "text",
+    //   "epub": "text",
+    // }
+    // const extend = props.fileInfo.filename.split('.').pop()
+    // let fileType = "unknown"
+    // if(extend) {
+    //   if(extendToType[extend.toLowerCase()]) {
+    //     fileType = extendToType[extend.toLowerCase()]
+    //   }
+    // }
+    // const fileTypeIconSrc = new URL(`../assets/file-type-${fileType}.svg`, import.meta.url).href
     
     let imgLoaded = ref(false)
     let downloadProgress = ref(0)
 
     async function ToggleShowDetail() {
-      if(!needNewName.value) {
-        showDetail.value = !showDetail.value
-      }
+      showDetail.value = !showDetail.value
 
       // Create qrcode
       if(!qrCreated.value) {
@@ -276,12 +288,37 @@ export default {
       }
     }
 
-    const deleteFileItem = inject("deleteFileItem") as (md5:string) => void
+    const deleteFileItem = inject("deleteFileItem") as Function
 
-    async function deleteCurItem() {
+    async function deleteItem() {
       if (confirm(`${props.str.comfirm_delete} ${props.fileInfo.filename}`)) {
-        if(props.url_base) {
-          props.fileInfo.deleteItem(props.url_base, deleteFileItem)
+        deleteState.value = asyncState.waitRes
+        const form = new FormData()
+        const url = `${props.url_base}/api/v1/file/${props.fileInfo.md5WithExten}`
+        try {
+          const res = await fetch(url, {
+            method: 'delete',
+            headers: {
+              'Authorization': ('Bearer ' + localStorage.getItem('token')) ?? ''
+            },
+            mode: 'cors',
+            body: form
+          })
+          const { success, msg } = await res.json()
+          if (success) {
+            deleteState.value = asyncState.success
+            console.log(`服务器: ${msg}`);
+            // context.emit('delete-item', props.fileInfo!.md5)
+            if(props.fileInfo != undefined) {
+              deleteFileItem(props.fileInfo.md5)
+            }
+          } else {
+            deleteState.value = asyncState.failed
+            console.error(`服务器: ${msg}`);
+          }
+        } catch (error) {
+          deleteState.value = asyncState.failed
+          console.error(error)
         }
       }
     }
@@ -335,9 +372,7 @@ export default {
     }
 
     function cancelRename() {
-      setTimeout(() => {
-        needNewName.value = false
-      }, 100);
+      needNewName.value = false
     }
 
     function cleanNameInput() {
@@ -357,10 +392,7 @@ export default {
       originImgLoaded.value = true
     }
 
-    let selectorActived = inject("selectorActived")
-
     return {
-      selectorActived,
       fileType,
       fileTypeIconSrc,
       handleOriginImgLoaded,
@@ -381,7 +413,7 @@ export default {
       fileUrl,
       showDetail,
       ToggleShowDetail,
-      deleteCurItem,
+      deleteItem,
       deleteState,
       asyncState,
       qrCodeUrl,
@@ -396,139 +428,47 @@ export default {
 </script>
 
 <style scoped>
-@media (max-width: 35rem) {
-  .file-item {
-    /* border: 0.08rem solid #888; */
-    border-bottom: 0.08rem solid #eee;
-    /* border-radius: 0.4em; */
-    /* box-shadow: 0.05em 0.05em 0.2em #999; */
-    /* padding: 0.5em 0.5em 0.5em 0.5em; */
-    /* margin: 0.3em 0.6em 0.4em 0.6em; */
-    margin: 0em 0.6em 0em 0.6em;
-  
-    display: flex;
-    flex-direction: column;
-    /* gap: 0.5em; */
-  }
-}
-@media (min-width: 35rem) {
-  .file-item {
-    /* border: 0.08rem solid #888; */
-    border-bottom: 0.08rem solid #eee;
-    margin: 0em 0.6em 0em 0.6em;
-  
-    display: flex;
-    flex-direction: column;
-    /* gap: 0.5em; */
-  }
-}
-.title-container {
+.file-item {
+  border-radius: 0.4em;
+  /* border: 0.08rem solid #888; */
+  box-shadow: 0.05em 0.05em 0.2em #999;
+  padding: 0.5em 0.5em 0.7em 0.5em;
+  margin: 0.3em 0.6em 0.4em 0.6em;
+
   display: flex;
-  align-items: center;
-  gap: 0em;
-}
-.title-container input[type="checkbox"]{
-  -webkit-appearance:none;
-  appearance:none;
-  width: 1.2em;
-  height: 1.2em;
-  /* background: #eee; */
-  border: 0.08em solid #999;
-  border-radius: 50%;
-  outline: none;
-}
-.title-container input[type="checkbox"]:checked{
-  border: none;
-  background: #ffd154;
+  flex-direction: column;
+  gap: 0.5em;
 }
 .file-item .title {
-  flex:1;
-  padding: 0.6em 0.5em 0.6em 0.5em;
-  overflow:hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  flex-wrap: nowrap;
-  gap:0.4em;
-}
-.file-item .expanded_titile {
-  flex:1;
-  white-space: wrap;
-  overflow: auto;
+  /* 文字自动换行 */
   word-break: break-all;
-  padding: 0.5em 0.5em 0.3em 0.5em;
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap:0.5em;
-}
-@media (any-hover: hover) {
-  .file-item .title:hover {
-    background-color: rgb(216, 216, 216, 0.3);
-  }
-  .file-item .expanded_titile:hover {
-    background-color: rgb(216, 216, 216, 0.3);
-  }
-}
-.file-item .title .img-filename {
-  display: flex;
-  align-items: center;
-  gap:0.4em;
-}
-.file-item .expanded_titile .img-filename {
-  display: flex;
+  /* flex-wrap: wrap; */
   align-items: center;
   gap:0.4em;
 }
 .file-item .title .file-type-icon{
   max-width: calc(var(--font-size));
 }
-.file-item .expanded_titile .file-type-icon{
-  max-width: calc(var(--font-size));
-}
 .file-item .title input {
   padding: 0 0.5em 0 0.5em;
   height: calc(var(--font-size) * 2);
 }
-.file-item .expanded_titile input {
-  padding: 0 0.5em 0 0.5em;
-  height: calc(var(--font-size) * 2);
-}
-.bold_text {
-  font-size: calc(var(--font-size) * 1.3);
-  font-weight:bold;
-}
-.show_all_text {
-  white-space: wrap;
-  overflow: auto;
-  word-break: break-all;
-}
-.show_part_text {
-  overflow:hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .file-item .control {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.5em;
+  gap: 0.5rem;
 }
 .file-item .detail {
   /* background-color:antiquewhite; */
-  padding: 0.2em 0.5em 0.4em 0.5em;
+  padding: 0.2em 0em 0.4em 0em;
   display: flex;
-  flex-direction: column;
   flex-wrap:wrap;
+  /* justify-content: center; */
+  justify-content: space-evenly;
+  align-items: center;
   gap:0.5em;
-}
-.file-item .detail .detail-part{
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.6em;
 }
 .file-item .detail .qrcode {
   /* border: 0.05em solid #888; */
@@ -540,7 +480,7 @@ export default {
   gap: 0.5em;
 }
 .file-item .detail .qrcode img {
-  width: 8em;
+  width: 9em;
 }
 .file-item-detail-img {
   max-width: 12rem;

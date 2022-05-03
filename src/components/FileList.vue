@@ -100,16 +100,30 @@ export default {
 </script>
 
 <style scoped>
-.file-list {
-  /* border: 0.05em solid #888; */
-  flex: 1;
-  width: 100%;
-  max-width: 40rem;
-  padding: 0.5rem 0rem 2rem 0rem;
+@media (max-width: 35rem) {
+  .file-list {
+    /* border: 0.05em solid #888; */
+    width: 100%;
+    /* padding: 0; */
+    padding: 0.5em 0em 2em 0em;
+    overflow-y: auto;
+  
+    display: flex;
+    flex-direction: column;
+  }
+}
+@media (min-width: 35rem) {
+  .file-list {
+    flex: 1;
+    width: 0;
+    /* padding: 1.5em 0em 2em 0em; */
+    margin: 1.4em 0em 2em 0.5em;
 
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
+    overflow-y: auto;
+
+    display: flex;
+    flex-direction: column;
+  }
 }
 .loading-block {
   width: inherit;
