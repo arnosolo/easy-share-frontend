@@ -47,7 +47,7 @@
         <span>{{str.edit}}</span>
       </div>
       <button @click="handleToggleSelector" class="light-button light-button-content">
-        <img src="../assets/select-square.svg" alt="multiple-select-img">
+        <img src="../assets/list2.svg" alt="multiple-select-img">
         <span v-if="selectorActived">{{str.hide}}</span>
         <span v-else>{{str.select}}</span>
       </button>
@@ -143,7 +143,9 @@ export default {
     }
     let deleteSelected = inject("deleteSelected") as Function
     function handleDeleteSelected() {
-      deleteSelected()
+      if (confirm(`${props.str.comfirm_delete} ${selectedFileNum.value} ${props.str.items}?`)) {
+        deleteSelected()
+      }
     }
     let clearSelected = inject("clearSelected") as Function
     function handleClearSelected() {
@@ -217,9 +219,11 @@ export default {
   }
 }
 .control-item input {
+  background-color: #fff;
   height: 2em;
   width: 4.5em;
   padding: 0em 0.3em 0em 0.4em;
+  outline: none;
   /* font-size: 1rem; */
 }
 .img-text {

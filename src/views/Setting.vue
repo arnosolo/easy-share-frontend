@@ -102,15 +102,22 @@ export default {
   flex: 1;
   max-width: 44rem;
   padding: 1rem 0rem 1rem 0rem;
+  animation-name: fade-in;
+  animation-duration: 0.5s;
 
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1rem;
 }
+@keyframes fade-in {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
 .setting-title {
-  font: 2rem;
-  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 0;
+  font-size: 1.5em;
+  color: #469AEE;
 }
 .setting-form {
   display: flex;

@@ -9,9 +9,8 @@
           <span>{{str.failed}}</span>
         </div>
       </div>
-      <div :class="{title:!showDetail, expanded_titile:showDetail}" @click="ToggleShowDetail">
+      <div :class="{title:!showDetail, expanded_titile:showDetail}" @click="handleTitleClick">
         <img :src="fileTypeIconSrc" alt="file-type-icon" class="file-type-icon">
-        <!-- <span @click="needNewName = true" v-show="!needNewName">{{fileInfo.filename}}</span> -->
         <span v-show="!needNewName" :class="{bold_text: showDetail}">{{fileInfo.filename}}</span>
         <input v-if="needNewName" type="text" v-model="newName">
         <div v-if="needNewName" class="name-input-editor">
@@ -127,7 +126,7 @@
 </template>
 
 <script lang="ts">
-import { inject, onMounted, reactive, ref} from 'vue'
+import { inject, onMounted, reactive, Ref, ref} from 'vue'
 import { LangString } from '../langStrings';
 import { asyncState } from '../types'
 import { FileInfo } from '../hooks/useFileInfoList'
@@ -279,7 +278,7 @@ export default {
     const deleteFileItem = inject("deleteFileItem") as (md5:string) => void
 
     async function deleteCurItem() {
-      if (confirm(`${props.str.comfirm_delete} ${props.fileInfo.filename}`)) {
+      if (confirm(`${props.str.comfirm_delete}${props.fileInfo.filename}`)) {
         if(props.url_base) {
           props.fileInfo.deleteItem(props.url_base, deleteFileItem)
         }
@@ -357,9 +356,18 @@ export default {
       originImgLoaded.value = true
     }
 
-    let selectorActived = inject("selectorActived")
+    let selectorActived = inject("selectorActived") as Ref
+
+    function handleTitleClick() {
+      if(selectorActived.value) {
+        props.fileInfo.selected = !props.fileInfo.selected
+      } else {
+        ToggleShowDetail()
+      }
+    }
 
     return {
+      handleTitleClick,
       selectorActived,
       fileType,
       fileTypeIconSrc,
@@ -430,8 +438,8 @@ export default {
 .title-container input[type="checkbox"]{
   -webkit-appearance:none;
   appearance:none;
-  width: 1.2em;
-  height: 1.2em;
+  width: 0.9em;
+  height: 0.9em;
   /* background: #eee; */
   border: 0.08em solid #999;
   border-radius: 50%;

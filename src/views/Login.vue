@@ -1,38 +1,41 @@
 <template>
   <div class="login">
-    <h1>{{str.get_start}}</h1>
-    <div class="login-form">
-      <div class="login-form-item">
-        <div class="login-form-item-lable">
-          <img src="../assets/username.svg" alt="username-img">
-          <label for="username"><span>{{str.username}}</span></label>
+    <div class="card">
+      <h1>{{str.title}}</h1>
+      <div class="login-form">
+        <div class="login-form-item">
+          <div class="login-form-item-lable">
+            <img src="../assets/username.svg" alt="username-img">
+            <label for="username"><span :class="{label_blur: !usernameInputing, label_focus: usernameInputing}">{{str.username}}</span></label>
+          </div>
+          <input type="text" v-model="username" id="username" :onfocus="handleFocus" :onblur="handleBlur">
         </div>
-        <input type="text" v-model="username" id="username">
-      </div>
-      <div class="login-form-item">
-        <div class="login-form-item-lable">
-          <img src="../assets/password.svg" alt="username-img">
-          <label for="password"><span>{{str.password}}</span></label>
+        <div class="login-form-item">
+          <div class="login-form-item-lable">
+            <img src="../assets/password.svg" alt="username-img">
+            <label for="password"><span :class="{label_blur: !pwInputing, label_focus: pwInputing}">{{str.password}}</span></label>
+          </div>
+          <input type="password" v-model="password" id="password" :onfocus="handlePwFocus" :onblur="handlePwBlur">
         </div>
-        <input type="password" v-model="password" id="password">
       </div>
+      <button @click="signUpOrLogin" :class="{'primary-button': infoComplete, 'light-button': !infoComplete, inactive: loginState == asyncState.waitRes}">
+        <span v-if="loginState == asyncState.waitRes">{{str.waitting}}</span>
+        <div v-else-if="loginState == asyncState.failed" class="file-item-msg">
+          <img src="../assets/failed.svg" alt="failed-img">
+          <span >{{str.login_failed}}</span>
+        </div>
+        <div v-else class="file-item-msg">
+          <img v-if="infoComplete" src="../assets/login_fff.svg" alt="login-img">
+          <img v-else src="../assets/login_469AEE.svg" alt="login-img">
+          <span>{{str.login}}</span>
+        </div>
+      </button>
     </div>
-    <button @click="signUpOrLogin" class="light-button" :class="{ inactive: loginState == asyncState.waitRes }">
-      <span v-if="loginState == asyncState.waitRes">{{str.waitting}}</span>
-      <div v-else-if="loginState == asyncState.failed" class="file-item-msg">
-        <img src="../assets/failed.svg" alt="failed-img">
-        <span >{{str.login_failed}}</span>
-      </div>
-      <div v-else class="file-item-msg">
-        <img src="../assets/login-blue.svg" alt="login-img">
-        <span>{{str.login}}</span>
-      </div>
-    </button>
   </div>
 </template>
 
 <script lang="ts">
-import { inject, onMounted, reactive, ref} from 'vue'
+import { computed, inject, onMounted, reactive, ref} from 'vue'
 import { LangString } from '../langStrings';
 import SparkMD5 from 'spark-md5'
 import { useRouter } from 'vue-router';
@@ -86,8 +89,6 @@ export default {
         console.error(error);
       }
     }
-    // provide('checkAuth', checkAuth)
-    // const checkAuth = inject("checkAuth") as Function
 
     async function signUpOrLogin() {
       loginState.value = asyncState.waitRes
@@ -116,7 +117,35 @@ export default {
       }
     }
 
+    let usernameInputing = ref(false)
+    function handleFocus() {
+      usernameInputing.value = true
+    }
+    function handleBlur() {
+      usernameInputing.value = false
+    }
+
+    let pwInputing = ref(false)
+    function handlePwFocus() {
+      pwInputing.value = true
+    }
+
+    function handlePwBlur() {
+      pwInputing.value = false
+    }
+
+    let infoComplete = computed(() => {
+      return (username.value.length != 0) && (password.value.length != 0)
+    })
+
     return {
+      infoComplete,
+      pwInputing,
+      handlePwBlur,
+      handlePwFocus,
+      handleBlur,
+      handleFocus,
+      usernameInputing,
       username,
       password,
       signUpOrLogin,
@@ -135,15 +164,27 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+}
+.login .card {
+  /* background-color:rgba(238, 238, 238, 0.4); */
+  margin: 1em;
+  padding: 1em;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1em;
 }
 .login h1 {
-  padding: 2rem 1rem 1rem 1rem;
+  padding: 0;
+  margin: 0.3em 0 0.3em 0;
+  font-size: 2em;
+  color: #469AEE;
 }
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 0.8em;
+  gap: 0.5em;
 }
 .login-form-item {
   /* border: 1px solid rgba(230, 165, 24, 0.813); */
@@ -159,10 +200,21 @@ export default {
   align-items: center;
   gap: 0.2em;
 }
+.label_blur{
+  font-size: calc(var(--font-size)* 0.9);
+  opacity: 0.8;
+}
+.label_focus {
+  font-size: var(--font-size);
+  opacity: 1;
+}
 .login-form-item-lable img{
   width: var(--font-size);
 }
 .login-form-item input {
+  background-color: var(--color-secondary);
+  outline: none;
+  border: none;
   height: 2em;
   width: 8em;
   padding: 0 0.4em;
@@ -182,4 +234,5 @@ export default {
 .file-item-msg img{
   max-width: var(--font-size);
 }
+
 </style>

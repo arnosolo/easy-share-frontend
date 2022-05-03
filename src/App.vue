@@ -135,7 +135,7 @@ export default {
   --font-size: 1rem;
 
   --color-primary: #fff;
-  --color-secondary: #eee;
+  --color-secondary: #F0F0F4;
   /* --color-secondary: #B79FF1; */
   --text-color-primary: #222;
 }
@@ -220,10 +220,8 @@ input {
 
 .primary-button {
   border: none;
-  /* border: 0.08rem solid #888; */
   border-radius: 0.3em;
   background-color: var(--color-secondary);
-  /* background-color: #fff; */
   height: calc(var(--font-size) * 2.2);
   width: fit-content;
   min-width: 5.2rem;
@@ -238,6 +236,7 @@ input {
 }
 .primary-button span {
   font-size: calc(var(--font-size) * 0.9);
+  color: #fff;
 }
 .primary-button-content{
   display: flex;
@@ -248,6 +247,6 @@ input {
   max-width: var(--font-size);
 }
 .primary-button {
-  background-color: #1296db;
+  background-color: #469AEE;
 }
 </style>
