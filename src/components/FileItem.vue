@@ -11,7 +11,9 @@
       </div>
       <div :class="{title:!showDetail, expanded_titile:showDetail}" @click="handleTitleClick">
         <img :src="fileTypeIconSrc" alt="file-type-icon" class="file-type-icon">
-        <span v-show="!needNewName" :class="{bold_text: showDetail}">{{fileInfo.filename}}</span>
+        <span v-show="!needNewName" :class="{bold_text: showDetail}">
+          {{fileInfo.filename}}<span v-if="showDetail" class="color-span">{{str.less}}</span>
+        </span>
         <input v-if="needNewName" type="text" v-model="newName">
         <div v-if="needNewName" class="name-input-editor">
           <button @click="rename" class="light-button" :class="{inactive: renameState == asyncState.waitRes}">
@@ -59,6 +61,7 @@
           </div>
           <div class="light-button-content" v-else>
             <img src="../assets/delete.svg" alt="delete-img">
+            <!-- <img src="../assets/delete_ff0c16.svg" alt="delete-img"> -->
             <span>{{str.delete}}</span>
           </div>
         </button>
@@ -72,7 +75,7 @@
             <span>{{str.copyFailed}}</span>
           </div>
           <div class="light-button-content" v-else>
-            <img src="../assets/copy.svg" alt="copy-img">
+            <img src="../assets/link.svg" alt="copy-img">
             <span>{{str.copyLink}}</span>
           </div>
         </button>
@@ -87,7 +90,7 @@
             <span>{{str.download_success}}</span>
           </div>
           <div v-else class="light-button-content">
-            <img src="../assets/download.svg" alt="download-img">
+            <img src="../assets/download_bold.svg" alt="download-img">
             <span>{{`${str.save} ${(fileInfo.size < 1048576 ? (fileInfo.size / 1024).toFixed(0).concat(" KB") : (fileInfo.size / 1048576).toFixed(0).concat(" MB"))}`}}</span>
           </div>
         </button>
@@ -438,8 +441,8 @@ export default {
 .title-container input[type="checkbox"]{
   -webkit-appearance:none;
   appearance:none;
-  width: 0.9em;
-  height: 0.9em;
+  width: 0.7em;
+  height: 0.7em;
   /* background: #eee; */
   border: 0.08em solid #999;
   border-radius: 50%;
@@ -466,7 +469,8 @@ export default {
   white-space: wrap;
   overflow: auto;
   word-break: break-all;
-  padding: 0.5em 0.5em 0.3em 0.5em;
+  /* padding: 0.5em 0.5em 0.3em 0.5em; */
+  padding: 0.4em 0.5em 0.4em 0.5em;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -589,4 +593,8 @@ export default {
   background: #ddd;
 }
 
+.color-span {
+  padding-left: 0.5em;
+  color: var(--text-color-primary);
+}
 </style>

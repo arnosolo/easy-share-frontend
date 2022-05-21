@@ -193,7 +193,7 @@ export default {
   /* justify-content:space-between; */
   align-items:first-start;
   /* flex-wrap: wrap; */
-  gap: 0.2em;
+  gap: 0.3em;
 }
 .login-form-item-lable {
   display: flex;
@@ -201,12 +201,11 @@ export default {
   gap: 0.2em;
 }
 .label_blur{
-  font-size: calc(var(--font-size)* 0.9);
-  opacity: 0.8;
+  font-size: var(--font-size);
 }
 .label_focus {
   font-size: var(--font-size);
-  opacity: 1;
+  border-bottom: 0.1em solid #469AEE;
 }
 .login-form-item-lable img{
   width: var(--font-size);

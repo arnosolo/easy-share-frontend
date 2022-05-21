@@ -46,17 +46,17 @@
         <img src="../assets/edit.svg" alt="edit-img">
         <span>{{str.edit}}</span>
       </div>
-      <button @click="handleToggleSelector" class="light-button light-button-content">
+      <button @click="handleToggleSelector" v-if="!selectorActived" class="light-button light-button-content">
         <img src="../assets/list2.svg" alt="multiple-select-img">
         <span v-if="selectorActived">{{str.hide}}</span>
         <span v-else>{{str.select}}</span>
       </button>
-      <button @click="handleDeleteSelected" v-show="hasSelected" class="light-button light-button-content">
-        <img src="../assets/delete.svg" alt="delete">
-        <span>{{selectedFileNum}} {{str.items}}</span>
-      </button>
-      <button @click="handleClearSelected" v-show="hasSelected" class="light-button light-button-content">
+      <button @click="handleClearSelected" v-show="selectorActived" class="light-button light-button-content">
         <img src="../assets/clear.svg" alt="clear">
+        <span>{{str.unselect}}</span>
+      </button>
+      <button @click="handleDeleteSelected" v-show="hasSelected" class="light-button light-button-content">
+        <img src="../assets/delete_ff0c16.svg" alt="delete">
         <span>{{selectedFileNum}} {{str.items}}</span>
       </button>
     </div>
@@ -150,6 +150,7 @@ export default {
     let clearSelected = inject("clearSelected") as Function
     function handleClearSelected() {
       clearSelected()
+      toggleSelector()
     }
 
     return {

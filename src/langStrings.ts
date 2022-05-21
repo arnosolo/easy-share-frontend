@@ -70,6 +70,8 @@ class LangString {
   edit = "edit"
   items = "items"
   hide = "Hide"
+  unselect = "Unselect"
+  server = "Server"
 }
 const en = new LangString()
 const zhCN = new LangString()
@@ -139,10 +141,12 @@ zhCN.color_mode = "色彩模式"
 zhCN.dark_mode = "黑暗"
 zhCN.light_mode = "明亮"
 zhCN.save = "保存"
-zhCN.select = "选取"
+zhCN.select = "多选"
 zhCN.edit = "编辑"
 zhCN.items = "项目"
 zhCN.hide = "隐藏"
+zhCN.unselect = "不选"
+zhCN.server = "服务器"
 
 const langStrings = { en, zhCN }
 export { langStrings, LangString }

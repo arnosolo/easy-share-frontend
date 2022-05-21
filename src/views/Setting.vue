@@ -29,6 +29,13 @@
           >{{val}}</option>
         </select>
       </div>
+      <div class="setting-form-item">
+        <div class="setting-form-item-lable">
+          <img src="../assets/server.svg" alt="font_size-img">
+          <div><span>{{str.server}}</span></div>
+        </div>
+        <input v-model="curUrlBase" @change="handleServerChange" type="text" class="setting-input">
+      </div>
       <!-- <div class="setting-form-item">
         <div class="setting-form-item-lable">
           <img v-if="colorTheme == `dark`" src="../assets/moon.svg" alt="colorTheme-img">
@@ -60,6 +67,10 @@ export default {
     //   type: Array,
     //   required: true,
     // },
+    url_base: {
+      type: String,
+      required: true,
+    },
     str: {
       type: LangString,
       required: true,
@@ -84,7 +95,17 @@ export default {
     const lang = inject("lang")
     const langOpts = inject("langOpts") as Array<string>
 
+    const setUrlBase = inject("setUrlBase") as Function
+    let curUrlBase = ref("")
+    onMounted(() => {
+      curUrlBase.value = props.url_base
+    })
+    function handleServerChange() {
+      setUrlBase(curUrlBase.value)
+    }
     return {
+      curUrlBase,
+      handleServerChange,
       lang,
       langOpts,
       langStrings,
@@ -102,8 +123,8 @@ export default {
   flex: 1;
   max-width: 44rem;
   padding: 1rem 0rem 1rem 0rem;
-  animation-name: fade-in;
-  animation-duration: 0.5s;
+  /* animation-name: fade-in; */
+  /* animation-duration: 0.5s; */
 
   display: flex;
   flex-direction: column;
@@ -144,6 +165,14 @@ export default {
   gap: 0.5em;
 }
 .setting-form-item-lable img{
-  width: 1.5rem;
+  width: 1.3em;
+}
+.setting-input {
+  background-color: var(--color-secondary);
+  outline: none;
+  border: none;
+  height: calc(var(--font-size) * 2.2);
+  width: 7em;
+  padding: 0 0.4em;
 }
 </style>

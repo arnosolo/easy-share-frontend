@@ -22,6 +22,20 @@ export default {
   components: { Setting, NavBar, FilePage},
   setup() {
     let url_base = ref(configs.url_base)
+    onMounted(() => {
+      const url = localStorage.getItem("url_base")
+      if(url) {
+        url_base.value = url
+      }
+    })
+    function setUrlBase(str: string) {
+      if(str) {
+        url_base.value = str
+        localStorage.setItem("url_base", str)
+      }
+    }
+    provide('setUrlBase', setUrlBase)
+    
     let keyword = ref("")
     provide('keyword', keyword)
 
@@ -136,8 +150,8 @@ export default {
 
   --color-primary: #fff;
   --color-secondary: #F0F0F4;
-  /* --color-secondary: #B79FF1; */
-  --text-color-primary: #222;
+  --text-color-primary: #469AEE;
+  --text-color-normal: #222;
 }
 [color-theme="dark"] {
   --color-primary: #555;
@@ -152,12 +166,12 @@ body {
 }
 select,
 span {
-  color: var(--text-color-primary);
+  color: var(--text-color-normal);
 }
 input,
 body {
   background-color: var(--color-primary);
-  color: var(--text-color-primary);
+  color: var(--text-color-normal);
 }
 input {
   border-radius: 0.3rem;
