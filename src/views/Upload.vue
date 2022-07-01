@@ -1,26 +1,31 @@
 <template>
   <div class="file-page">
-    <!-- <Upload :str="str" :url_base="url_base" :uploadList="uploadList"></Upload>
-    <UploadItem
-      v-for="(item) in uploadList"
-      :key="item.id"
-      :uploadInfo="item"
-      :str="str"
-      :url_base="url_base"
-    ></UploadItem> -->
+    <Upload :str="str" :url_base="url_base" :uploadList="uploadList"></Upload>
+    <div v-show="!uploadListIsEmpty">
+      <UploadItem
+        v-for="(item) in uploadList"
+        :key="item.id"
+        :uploadInfo="item"
+        :str="str"
+        :url_base="url_base"
+      ></UploadItem>
+    </div>
+    <div v-show="uploadListIsEmpty">
+      List is Empty
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { onMounted, reactive, ref } from 'vue'
+import { onMounted, reactive, ref, computed } from 'vue'
 import { LangString } from '../langStrings';
 import Upload from '../components/Upload.vue'
 import FileList from '../components/FileList.vue'
-import { useRouter } from 'vue-router';
+import UploadItem from '../components/UploadItem.vue'
 
 export default {
   name: "FilePage",
-  components: {Upload, FileList},
+  components: {Upload, FileList, UploadItem},
   props: {
     str: {
       type: LangString,
@@ -53,7 +58,9 @@ export default {
   },
   // @ts-ignore
   setup(props) {
+    let uploadListIsEmpty = computed(() => props.uploadList.length == 0)
     return {
+      uploadListIsEmpty,
     }
   },
 }
@@ -61,7 +68,7 @@ export default {
 
 <style scoped>
 @media (max-width: 35rem) {
-  .file-page {
+.file-page {
     flex: 1;
     overflow-y: auto;
     display: flex;
@@ -73,12 +80,11 @@ export default {
 /* large */
 @media (min-width: 35rem) {
   .file-page {
-    /* overflow-y: auto; */
-    max-width: 44rem;
+    flex: 1;
+    width: 0;
+    max-width: 44em;
+
     display: flex;
-    flex-direction: row;
-    align-items:flex-start;
-    justify-content: center;
   }
 }
 </style>

@@ -10,9 +10,9 @@ import Setting from './views/Setting.vue';
 import NavBar from './components/NavBar.vue'
 import FilePage from './views/FilePage.vue'
 import { useRouter } from 'vue-router';
+import { configs } from './configs';
 import { useFileInfoList } from './hooks/useFileInfoList';
 import { useUploadList } from './hooks/useUploadList';
-import { configs } from './configs';
 import { useFontSize } from './hooks/useFontSize';
 import { useLanguage } from './hooks/useLanguage';
 import { useSelector } from './hooks/useSelector';

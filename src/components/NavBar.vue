@@ -53,7 +53,7 @@ export default {
 <template>
   <div class="navbar">
     <img @click="toHome" src="../assets/list.svg" alt="home-pic" class="nav-btn navbar-home-img" :class="{'active': actived == `home`}">
-    <!-- <img @click="toUpload" src="../assets/upload.svg" alt="upload-pic" class="nav-btn navbar-home-img" :class="{'active': actived == `upload`}"> -->
+    <img @click="toUpload" src="../assets/upload.svg" alt="upload-pic" class="nav-btn navbar-home-img" :class="{'active': actived == `upload`}">
     <img @click="toSetting" src="../assets/setting-active.svg" alt="setting-pic" class="nav-btn navbar-setting-img" :class="{'active': actived == `setting`}">
   </div>
 </template>

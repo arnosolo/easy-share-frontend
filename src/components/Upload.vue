@@ -59,6 +59,7 @@
         <img src="../assets/delete_ff0c16.svg" alt="delete">
         <span>{{selectedFileNum}} {{str.items}}</span>
       </button>
+      <!-- <AsyncButton :initMsg="'before init'" :processMsg="'processing'"></AsyncButton> -->
     </div>
   </div>
 </template>
@@ -71,106 +72,97 @@ import SparkMD5 from 'spark-md5';
 import { useUploadList } from '../hooks/useUploadList';
 import { FileInfo } from '../hooks/useFileInfoList';
 import { asyncState } from "../types"
+// import AsyncButton from './AsyncButton.vue';
 
 export default {
-  name: "Upload",
-  props: {
-    str: {
-      type: LangString,
-      required: true,
+    name: "Upload",
+    props: {
+        str: {
+            type: LangString,
+            required: true,
+        },
+        url_base: {
+            type: String,
+            required: true,
+        },
     },
-    url_base: {
-      type: String,
-      required: true,
+    // @ts-ignore
+    setup(props, context) {
+        let btn = ref<typeof AsyncButton | null>(null);
+        let keyword = inject<Ref<string>>("keyword");
+        const fileList = inject("fileList") as Array<FileInfo>;
+        const listAllFiles = inject("listAllFiles") as Function;
+        const listFilesState = inject("listFilesState");
+        onMounted(() => {
+            if (fileList.length == 0) {
+                listAllFiles();
+            }
+        });
+        function clearInput() {
+            if (keyword)
+                keyword.value = "";
+        }
+        function handleListAllFiles() {
+            listAllFiles();
+        }
+        // Upload File
+        const filepicker = ref();
+        function selectFile() {
+            filepicker.value.click();
+        }
+        let addUpload = inject("addUpload") as Function;
+        async function uploadFile() {
+            const files = filepicker.value.files;
+            // context.emit('new_upload', files)
+            console.log(files);
+            addUpload(files);
+        }
+        let searching = computed(() => {
+            return keyword?.value.length != 0;
+        });
+        let selectedFileNum = computed(() => {
+            return fileList.filter(it => it.selected).length;
+        });
+        let hasSelected = computed(() => {
+            return selectedFileNum.value != 0;
+        });
+        let selectorActived = inject("selectorActived");
+        let toggleSelector = inject("toggleSelector") as Function;
+        function handleToggleSelector() {
+            toggleSelector();
+        }
+        let deleteSelected = inject("deleteSelected") as Function;
+        function handleDeleteSelected() {
+            if (confirm(`${props.str.comfirm_delete} ${selectedFileNum.value} ${props.str.items}?`)) {
+                deleteSelected();
+                toggleSelector();
+            }
+        }
+        let clearSelected = inject("clearSelected") as Function;
+        function handleClearSelected() {
+            clearSelected();
+            toggleSelector();
+        }
+        return {
+            // AsyncButton,
+            selectorActived,
+            handleClearSelected,
+            handleDeleteSelected,
+            hasSelected,
+            selectedFileNum,
+            handleToggleSelector,
+            searching,
+            clearInput,
+            keyword,
+            uploadFile,
+            filepicker,
+            selectFile,
+            listFilesState,
+            handleListAllFiles,
+            asyncState,
+        };
     },
-  },
-  // @ts-ignore
-  setup(props, context) {
-    let keyword = inject<Ref<string>>("keyword")
-    
-    const fileList = inject("fileList") as Array<FileInfo>
-    const listAllFiles = inject("listAllFiles") as Function
-    const listFilesState = inject("listFilesState")
-
-    onMounted(() => {
-      if(fileList.length == 0) {
-        listAllFiles()
-      }
-    })
-    
-    function clearInput() {
-      if(keyword) keyword.value = ""
-    }
-
-    function handleListAllFiles() {
-      listAllFiles()
-    }
-
-    // Upload File
-    const filepicker = ref()
-    function selectFile() {
-      filepicker.value.click()
-    }
-
-    let addUpload = inject("addUpload") as Function
-
-    async function uploadFile() {
-      const files = filepicker.value.files
-
-      // context.emit('new_upload', files)
-      console.log(files);
-      
-      addUpload(files)
-    }
-
-
-    let searching = computed(() => {
-      return keyword?.value.length != 0
-    })
-
-    let selectedFileNum = computed(() => {
-      return fileList.filter(it => it.selected).length
-    })
-
-    let hasSelected = computed(() => {
-      return selectedFileNum.value != 0
-    })
-
-    let selectorActived = inject("selectorActived")
-    let toggleSelector = inject("toggleSelector") as Function
-    function handleToggleSelector() {
-      toggleSelector()
-    }
-    let deleteSelected = inject("deleteSelected") as Function
-    function handleDeleteSelected() {
-      if (confirm(`${props.str.comfirm_delete} ${selectedFileNum.value} ${props.str.items}?`)) {
-        deleteSelected()
-      }
-    }
-    let clearSelected = inject("clearSelected") as Function
-    function handleClearSelected() {
-      clearSelected()
-      toggleSelector()
-    }
-
-    return {
-      selectorActived,
-      handleClearSelected,
-      handleDeleteSelected,
-      hasSelected,
-      selectedFileNum,
-      handleToggleSelector,
-      searching,
-      clearInput,
-      keyword,
-      uploadFile,
-      filepicker,
-      selectFile,
-      listFilesState,
-      handleListAllFiles,
-      asyncState,
-    }
-  }
+    // components: { AsyncButton }
 }
 </script>
 

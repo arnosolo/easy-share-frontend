@@ -9,7 +9,7 @@ import Upload from '../views/Upload.vue';
 const routes = [
   { path: '/', component: FilePage },
   { path: '/setting', component: Setting },
-  { path: '/Upload', component: Upload },
+  { path: '/upload', component: Upload },
   { path: '/login', component: Login },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },
 ]
